@@ -1,0 +1,302 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "RegUsers documentation",
+    "description": "This is a sample user register api",
+    "contact": {
+      "email": "rsjhony@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": "Everything about users"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create a user",
+        "description": "Create a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "name": "John",
+                  "email": "john02.smith@exemplo.com"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User1"
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "User already exists!"
+        }
+      },
+      "get": {
+        "tags": ["users"],
+        "summary": "Lista todos usuários",
+        "description": "Somente o usuário `admin` pode acessar",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User1"
+                  },
+                  "example": [
+                    {
+                      "id": "09606239-9ecb-4d7b-852c-b6f17f775c12",
+                      "admin": true,
+                      "name": "John",
+                      "email": "john02.smith@exemplo.com",
+                      "created_at": "2021-08-19T18:45:59.626Z",
+                      "updated_at": "2021-08-19T18:45:59.626Z"
+                    },
+                    {
+                      "id": "22b80dff-33bb-4306-8cc9-943d695a38fb",
+                      "admin": false,
+                      "name": "Bill",
+                      "email": "bill05.pembar@exemplo.com",
+                      "created_at": "2021-08-19T18:45:59.626Z",
+                      "updated_at": "2021-08-19T18:45:59.626Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Usuário sem permissão ou não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User is not admin!"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Listar um único usuário",
+        "description": "Find user by ID",
+        "parameters":[
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User1"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User does not exists"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/admin": {
+      "patch": {
+        "tags": ["users"],
+        "summary": "Tornar usuário admin",
+        "description": "Turn user admin by ID",
+        "parameters":[
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User1"
+                },
+                "example": {
+                  "id": "09606239-9ecb-4d7b-852c-b6f17f775c12",
+                  "admin": true,
+                  "name": "John",
+                  "email": "john02.smith@exemplo.com",
+                  "created_at": "2021-08-19T18:45:59.626Z",
+                  "updated_at": "2021-08-20T14:20:59.352Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User does not exists"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User1": {
+        "required": [
+          "name",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "admin": {
+            "type": "boolean",
+            "default": false
+          },
+          "name": {
+            "type": "string",
+            "example": "John"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john02.smith@exemplo.com"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "User2": {
+        "required": [
+          "name",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "admin": {
+            "type": "boolean",
+            "default": false
+          },
+          "name": {
+            "type": "string",
+            "example": "Bill"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "bill05.pembar@exemplo.com"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "format": "error"
+          }
+        }
+      }
+    }
+  }
+}
